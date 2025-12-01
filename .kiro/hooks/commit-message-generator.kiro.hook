@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Commit Message Generator",
+  "description": "Analyzes file changes when saved and generates a conventional commit message following best practices, including type, scope, summary under 50 chars, and detailed description for complex changes",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Analyze the changes made to the files and generate a conventional commit message following these guidelines:\n\n1. Review which files were modified and what changed\n2. Identify the type of change: feat (new feature), fix (bug fix), refactor (code restructuring), docs (documentation), style (formatting), test (tests), chore (maintenance), perf (performance)\n3. Write a clear and concise commit message following conventional commits format\n4. Include the scope in parentheses if changes are focused on specific components\n5. Keep the summary line under 50 characters when possible\n6. Add a longer description if the changes are complex\n7. Format: type(scope): summary\n\nDisplay the suggested commit message in a code block for easy copying."
+  }
+}
