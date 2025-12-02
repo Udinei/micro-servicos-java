@@ -119,6 +119,16 @@ lombok.config
 # application-local.properties
 # application-dev.properties
 
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
 # Logs
 logs/
 *.log.*
