@@ -1,0 +1,53 @@
+### Variáveis
+@baseUrl = http://localhost:8081/api/produtos
+
+### Listar todos os produtos
+GET {{baseUrl}}
+
+### Buscar produto por código
+GET {{baseUrl}}/1
+
+### Buscar produtos por nome
+GET {{baseUrl}}/buscar?nome=mouse
+
+### Criar novo produto
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "nome": "Notebook Dell",
+  "valorUnitario": 3500.00
+}
+
+### Criar outro produto
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "nome": "Mouse Logitech",
+  "valorUnitario": 89.90
+}
+
+### Atualizar produto
+PUT {{baseUrl}}/1
+Content-Type: application/json
+
+{
+  "nome": "Notebook Dell XPS",
+  "valorUnitario": 4500.00
+}
+
+### Deletar produto
+DELETE {{baseUrl}}/3
+
+### Teste completo - Criar e buscar
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "nome": "Teclado Mecanico",
+  "valorUnitario": 450.00
+}
+
+###
+GET {{baseUrl}}

@@ -2,7 +2,7 @@ package com.github.udinei.icompras.produtos.controller;
 
 import com.github.udinei.icompras.produtos.model.Produto;
 import com.github.udinei.icompras.produtos.service.ProdutoService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,10 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/produtos")
+@RequiredArgsConstructor
 public class ProdutoController {
 
-    @Autowired
-    private ProdutoService produtoService;
+    private final ProdutoService produtoService;
 
     /**
      * GET /api/produtos - Listar todos os produtos

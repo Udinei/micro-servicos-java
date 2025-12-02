@@ -4,5 +4,6 @@
   "java.jdt.ls.lombokSupport.enabled": true,
   "java.import.gradle.enabled": false,
   "java.import.maven.enabled": true,
-  "java.server.launchMode": "Standard"
+  "java.server.launchMode": "Standard",
+  "java.errors.incompleteClasspath.severity": "ignore"
 }

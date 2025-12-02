@@ -2,17 +2,17 @@ package com.github.udinei.icompras.produtos.service;
 
 import com.github.udinei.icompras.produtos.model.Produto;
 import com.github.udinei.icompras.produtos.repository.ProdutoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ProdutoService {
 
-    @Autowired
-    private ProdutoRepository produtoRepository;
+    private final ProdutoRepository produtoRepository;
 
     public List<Produto> listarTodos() {
         return produtoRepository.findAll();
