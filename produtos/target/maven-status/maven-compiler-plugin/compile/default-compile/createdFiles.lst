@@ -1,5 +1,0 @@
-com\github\udinei\icompras\produtos\model\Produto.class
-com\github\udinei\icompras\produtos\ProdutosApplication.class
-com\github\udinei\icompras\produtos\controller\ProdutoController.class
-com\github\udinei\icompras\produtos\service\ProdutoService.class
-com\github\udinei\icompras\produtos\repository\ProdutoRepository.class
