@@ -112,7 +112,7 @@ mvn spring-boot:run
 | PUT | `/api/produtos/{codigo}` | Atualizar produto |
 | DELETE | `/api/produtos/{codigo}` | Deletar produto |
 
-### Clientes API (porta 8081)
+### Clientes API (porta 8082)
 
 | Método | Endpoint | Descrição |
 |--------|----------|-----------|
