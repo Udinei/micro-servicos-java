@@ -354,7 +354,8 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ## ✨ Autor
 
-Desenvolvido por [Seu Nome](https://github.com/seu-usuario)
+Desenvolvido por [Udinei Silva](https://github.com/udinei)
+Projeto do curso [Spring Boot + Kafka: Arquitetura Completa de Microservices](https://www.udemy.com/course/spring-boot-kafka) ministrado por [Dougllas Sousa](https://www.udemy.com/user/dougllas-sousa/)
 
 ---
 
