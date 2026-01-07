@@ -8,12 +8,13 @@ O **iCompras** é um sistema modular de gerenciamento de compras online, constru
 
 ## 🏗️ Arquitetura
 
-O projeto é composto por três componentes principais:
+O projeto é composto por quatro componentes principais:
  
 ### Microserviços
 
 - **clientes** - Gerenciamento de clientes e cadastros
 - **produtos** - Catálogo e gestão de produtos
+- **pedidos** - Gestão de pedidos e itens de pedido
 - **icompras-servicos** - Infraestrutura e serviços auxiliares
 
 ### Infraestrutura
@@ -27,6 +28,8 @@ O projeto é composto por três componentes principais:
 - **Spring Boot 3.4.4** - Framework para microserviços
 - **Spring Data JPA** - Persistência de dados
 - **PostgreSQL 17.4** - Banco de dados
+- **MapStruct** - Mapeamento entre DTOs e entidades
+- **Bean Validation** - Validação de dados
 - **Lombok** - Redução de código boilerplate
 - **Maven** - Gerenciamento de dependências
 - **Docker & Docker Compose** - Containerização
@@ -37,19 +40,47 @@ O projeto é composto por três componentes principais:
 icompras/
 ├── clientes/                    # Microserviço de clientes
 │   ├── src/
-│   └── pom.xml
+│   │   ├── main/java/
+│   │   │   ├── controller/     # Endpoints REST
+│   │   │   ├── service/        # Lógica de negócio
+│   │   │   ├── repository/     # Acesso a dados
+│   │   │   └── model/          # Entidades JPA
+│   │   └── test/               # Testes unitários
+│   ├── pom.xml
+│   └── api-tests-clientes.http # Testes de API
 ├── produtos/                    # Microserviço de produtos
 │   ├── src/
-│   │   ├── controller/         # Endpoints REST
-│   │   ├── service/            # Lógica de negócio
-│   │   ├── repository/         # Acesso a dados
-│   │   └── model/              # Entidades JPA
+│   │   ├── main/java/
+│   │   │   ├── controller/     # Endpoints REST
+│   │   │   ├── service/        # Lógica de negócio
+│   │   │   ├── repository/     # Acesso a dados
+│   │   │   └── model/          # Entidades JPA
+│   │   └── test/               # Testes unitários
 │   ├── pom.xml
-│   └── api-tests.http          # Testes de API
+│   ├── api-tests.http          # Testes de API
+│   ├── API_ENDPOINTS.md        # Documentação da API
+│   └── LOMBOK_USAGE.md         # Guia do Lombok
+├── pedidos/                     # Microserviço de pedidos
+│   ├── src/
+│   │   ├── main/java/
+│   │   │   ├── controller/     # Endpoints REST
+│   │   │   ├── service/        # Lógica de negócio
+│   │   │   ├── repository/     # Acesso a dados
+│   │   │   ├── model/          # Entidades JPA
+│   │   │   ├── dto/            # Data Transfer Objects
+│   │   │   └── mapper/         # MapStruct mappers
+│   │   └── test/               # Testes unitários e property-based
+│   ├── pom.xml
+│   └── api-tests-pedidos.http  # Testes de API
 ├── icompras-servicos/          # Infraestrutura
+│   ├── src/
 │   └── database/
 │       ├── init.sql            # Script de inicialização
-│       └── postgres-docker-compose.yml
+│       ├── postgres-docker-compose.yml
+│       └── DOCKER_COMMANDS.md  # Comandos Docker
+├── .kiro/                      # Configurações Kiro
+│   └── specs/                  # Especificações de features
+│       └── pedidos-crud-fix/   # Spec do CRUD de pedidos
 └── README.md
 ```
 
@@ -90,12 +121,16 @@ cd ../icompras-servicos && mvn clean install
 ### 4. Execute os microserviços
 
 ```bash
-# Terminal 1 - Serviço de Clientes
+# Terminal 1 - Serviço de Clientes (porta 8082)
 cd clientes
 mvn spring-boot:run
 
-# Terminal 2 - Serviço de Produtos
+# Terminal 2 - Serviço de Produtos (porta 8081)
 cd produtos
+mvn spring-boot:run
+
+# Terminal 3 - Serviço de Pedidos (porta 8083)
+cd pedidos
 mvn spring-boot:run
 ```
 
@@ -122,6 +157,19 @@ mvn spring-boot:run
 | PUT | `/api/clientes/{codigo}` | Atualizar cliente |
 | DELETE | `/api/clientes/{codigo}` | Deletar cliente |
 
+### Pedidos API (porta 8083)
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/pedidos` | Listar todos os pedidos |
+| GET | `/api/pedidos/{codigo}` | Buscar pedido por código |
+| GET | `/api/pedidos/cliente/{codigoCliente}` | Buscar pedidos por cliente |
+| GET | `/api/pedidos/status/{status}` | Buscar pedidos por status |
+| POST | `/api/pedidos` | Criar novo pedido |
+| PUT | `/api/pedidos/{codigo}` | Atualizar pedido |
+| PATCH | `/api/pedidos/{codigo}/status` | Atualizar status do pedido |
+| DELETE | `/api/pedidos/{codigo}` | Deletar pedido |
+
 ## 📝 Exemplos de Uso
 
 ### Criar um produto
@@ -135,6 +183,36 @@ curl -X POST http://localhost:8081/api/produtos \
   }'
 ```
 
+### Criar um pedido
+
+```bash
+curl -X POST http://localhost:8083/api/pedidos \
+  -H "Content-Type: application/json" \
+  -d '{
+    "codigoCliente": 1,
+    "observacoes": "Entrega urgente",
+    "status": "PENDENTE",
+    "total": 3589.90,
+    "dadosPagamento": {
+      "tipoPagamento": "CARTAO_CREDITO",
+      "numeroCartao": "1234567890123456",
+      "codigoAutorizacao": "AUTH123"
+    },
+    "itens": [
+      {
+        "codigoProduto": 1,
+        "quantidade": 1,
+        "valorUnitario": 3500.00
+      },
+      {
+        "codigoProduto": 2,
+        "quantidade": 1,
+        "valorUnitario": 89.90
+      }
+    ]
+  }'
+```
+
 ### Listar produtos
 
 ```bash
@@ -144,6 +222,7 @@ curl http://localhost:8081/api/produtos
 ### PowerShell
 
 ```powershell
+# Criar produto
 $body = @{
     nome = "Mouse Logitech"
     valorUnitario = 89.90
@@ -152,6 +231,30 @@ $body = @{
 Invoke-RestMethod -Uri "http://localhost:8081/api/produtos" `
     -Method Post `
     -Body $body `
+    -ContentType "application/json"
+
+# Criar pedido
+$pedido = @{
+    codigoCliente = 1
+    observacoes = "Pedido via PowerShell"
+    status = "PENDENTE"
+    total = 89.90
+    dadosPagamento = @{
+        tipoPagamento = "PIX"
+        chavePix = "usuario@email.com"
+    }
+    itens = @(
+        @{
+            codigoProduto = 2
+            quantidade = 1
+            valorUnitario = 89.90
+        }
+    )
+} | ConvertTo-Json -Depth 3
+
+Invoke-RestMethod -Uri "http://localhost:8083/api/pedidos" `
+    -Method Post `
+    -Body $pedido `
     -ContentType "application/json"
 ```
 
@@ -192,7 +295,10 @@ docker exec -it db_i_compras psql -U postgres
 
 ### Testes com REST Client (VS Code)
 
-Instale a extensão **REST Client** e use o arquivo `produtos/api-tests.http` para testar os endpoints.
+Instale a extensão **REST Client** e use os arquivos de teste:
+- `produtos/api-tests.http` - Testes da API de produtos
+- `clientes/api-tests-clientes.http` - Testes da API de clientes  
+- `pedidos/api-tests-pedidos.http` - Testes da API de pedidos
 
 ### Testes com PowerShell
 
@@ -201,11 +307,38 @@ Instale a extensão **REST Client** e use o arquivo `produtos/api-tests.http` pa
 Invoke-RestMethod -Uri "http://localhost:8081/api/produtos" -Method Get
 ```
 
+## 🏛️ Arquitetura de Camadas
+
+### Pedidos (Exemplo de implementação completa)
+
+```
+Controller Layer (REST API)
+    ↓
+Service Layer (Business Logic)
+    ↓
+Repository Layer (Data Access)
+    ↓
+Database (PostgreSQL)
+
+DTOs ←→ MapStruct Mappers ←→ Entities
+```
+
+### Funcionalidades Implementadas
+
+- **DTOs com Bean Validation** - Validação automática de entrada
+- **MapStruct** - Mapeamento automático entre DTOs e entidades
+- **Relacionamentos JPA** - Pedido ↔ ItemPedido (OneToMany/ManyToOne)
+- **Transações** - Operações atômicas com `@Transactional`
+- **Testes Unitários** - Cobertura completa do service layer
+- **Property-Based Testing** - Testes com dados gerados automaticamente
+- **Dados de Pagamento** - Suporte a múltiplos tipos de pagamento
+
 ## 📚 Documentação Adicional
 
 - [Comandos Docker](icompras-servicos/database/DOCKER_COMMANDS.md)
 - [Endpoints da API](produtos/API_ENDPOINTS.md)
 - [Uso do Lombok](produtos/LOMBOK_USAGE.md)
+- [Especificações Kiro](.kiro/specs/) - Documentação de features
 
 ## 🤝 Contribuindo
 

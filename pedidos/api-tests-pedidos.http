@@ -1,0 +1,323 @@
+### Variáveis
+@baseUrl = http://localhost:8083/api/pedidos
+
+### Listar todos os pedidos
+GET {{baseUrl}}
+
+### Buscar pedido por código
+GET {{baseUrl}}/8
+
+### Buscar pedidos por cliente
+GET {{baseUrl}}/cliente/2
+
+### Buscar pedidos por status
+GET {{baseUrl}}/status/REALIZADO
+
+### Criar novo pedido com itens e pagamento PIX
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "codigoCliente": 2,
+  "status": "REALIZADO",
+  "total": 3589.90,
+  "observacoes": "Pedido teste com 2 itens",
+  "dadosPagamento": {
+    "tipoPagamento": "PIX",
+    "chavePix": "email@exemplo.com"
+  },
+  "itens": [
+    {
+      "codigoProduto": 2,
+      "quantidade": 1,
+      "valorUnitario": 3500.00
+    },
+    {
+      "codigoProduto": 3,
+      "quantidade": 1,
+      "valorUnitario": 89.90
+    }
+  ]
+}
+
+### Criar pedido com cartão de crédito
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "codigoCliente": 4,
+  "status": "REALIZADO",
+  "total": 450.00,
+  "observacoes": "Pedido de teclado mecânico",
+  "dadosPagamento": {
+    "tipoPagamento": "CARTAO_CREDITO",
+    "numeroCartao": "**** **** **** 1234",
+    "codigoAutorizacao": "AUTH123456"
+  },
+  "itens": [
+    {
+      "codigoProduto": 3,
+      "quantidade": 1,
+      "valorUnitario": 450.00
+    }
+  ]
+}
+
+### Criar pedido com boleto
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "codigoCliente": 5,
+  "status": "REALIZADO",
+  "total": 269.70,
+  "observacoes": "Pedido com 3 mouses",
+  "dadosPagamento": {
+    "tipoPagamento": "BOLETO",
+    "linhaDigitavel": "34191.79001 01043.510047 91020.150008 1 96610000000100"
+  },
+  "itens": [
+    {
+      "codigoProduto": 2,
+      "quantidade": 3,
+      "valorUnitario": 89.90
+    }
+  ]
+}
+
+### Atualizar pedido completo (agora requer itens)
+PUT {{baseUrl}}/22
+Content-Type: application/json
+
+{
+  "codigoCliente": 2,
+  "status": "PAGO",
+  "total": 3589.90,
+  "observacoes": "Pedido pago via PIX",
+  "dadosPagamento": {
+    "tipoPagamento": "PIX",
+    "chavePix": "pix-pagamento-123456789"
+  },
+  "itens": [
+    {
+      "codigoProduto": 2,
+      "quantidade": 1,
+      "valorUnitario": 3500.00
+    },
+    {
+      "codigoProduto": 3,
+      "quantidade": 1,
+      "valorUnitario": 89.90
+    }
+  ]
+}
+
+### Atualizar apenas o status do pedido
+PATCH {{baseUrl}}/22/status?status=FATURADO
+
+### Atualizar status para PREPARANDO_ENVIO
+PATCH {{baseUrl}}/22/status?status=PREPARANDO_ENVIO
+
+### Atualizar status para ENVIADO com código de rastreio
+PUT {{baseUrl}}/22
+Content-Type: application/json
+
+{
+  "codigoCliente": 1,
+  "status": "ENVIADO",
+  "total": 3589.90,
+  "codigoRastreio": "BR123456789BR",
+  "observacoes": "Pedido enviado pelos Correios",
+  "dadosPagamento": {
+    "tipoPagamento": "PIX",
+    "chavePix": "pix-pagamento-123456789"
+  },
+  "itens": [
+    {
+      "codigoProduto": 2,
+      "quantidade": 1,
+      "valorUnitario": 3500.00
+    },
+    {
+      "codigoProduto": 3,
+      "quantidade": 1,
+      "valorUnitario": 89.90
+    }
+  ]
+}
+
+### Atualizar com nota fiscal
+PUT {{baseUrl}}/6
+Content-Type: application/json
+
+{
+  "codigoCliente": 1,
+  "status": "FATURADO",
+  "total": 3589.90,
+  "urlNf": "https://nfe.fazenda.gov.br/nfe123456",
+  "observacoes": "Nota fiscal emitida",
+  "dadosPagamento": {
+    "tipoPagamento": "PIX",
+    "chavePix": "pix-pagamento-123456789"
+  },
+  "itens": [
+    {
+      "codigoProduto": 2,
+      "quantidade": 1,
+      "valorUnitario": 3500.00
+    },
+    {
+      "codigoProduto": 3,
+      "quantidade": 1,
+      "valorUnitario": 89.90
+    }
+  ]
+}
+
+### Simular erro de pagamento
+PATCH {{baseUrl}}/6/status?status=ERRO_PAGAMENTO
+
+### Deletar pedido
+DELETE {{baseUrl}}/6
+
+### Teste completo - Criar e buscar
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "codigoCliente": 3,
+  "status": "REALIZADO",
+  "total": 7000.00,
+  "observacoes": "Pedido de 2 notebooks",
+  "dadosPagamento": {
+    "tipoPagamento": "CARTAO_CREDITO",
+    "numeroCartao": "**** **** **** 5678",
+    "codigoAutorizacao": "AUTH789012"
+  },
+  "itens": [
+    {
+      "codigoProduto": 1,
+      "quantidade": 2,
+      "valorUnitario": 3500.00
+    }
+  ]
+}
+
+###
+GET {{baseUrl}}
+
+### Buscar todos os pedidos PAGOS
+GET {{baseUrl}}/status/PAGO
+
+### Buscar todos os pedidos ENVIADOS
+GET {{baseUrl}}/status/ENVIADO
+
+### Teste adicional - Pedido com PIX e chave diferente
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "codigoCliente": 6,
+  "observacoes": "Pedido teste PIX com CPF",
+  "dadosPagamento": {
+    "tipoPagamento": "PIX",
+    "chavePix": "123.456.789-00"
+  },
+  "itens": [
+    {
+      "codigoProduto": 1,
+      "quantidade": 1,
+      "valorUnitario": 2500.00
+    }
+  ]
+}
+
+### Teste adicional - Pedido com cartão débito
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "codigoCliente": 7,
+  "observacoes": "Pedido teste cartão débito",
+  "dadosPagamento": {
+    "tipoPagamento": "CARTAO_DEBITO",
+    "numeroCartao": "**** **** **** 9999",
+    "codigoAutorizacao": "DEBIT456789"
+  },
+  "itens": [
+    {
+      "codigoProduto": 2,
+      "quantidade": 2,
+      "valorUnitario": 89.90
+    }
+  ]
+}
+
+### Teste adicional - Pedido com boleto e linha digitável completa
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "codigoCliente": 8,
+  "observacoes": "Pedido teste boleto completo",
+  "dadosPagamento": {
+    "tipoPagamento": "BOLETO",
+    "linhaDigitavel": "23793.39126 60000.000003 00000.000000 8 96610000025000"
+  },
+  "itens": [
+    {
+      "codigoProduto": 3,
+      "quantidade": 5,
+      "valorUnitario": 50.00
+    }
+  ]
+}
+
+### Teste com chavePagamento - Pedido PIX com chave de pagamento
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "codigoCliente": 9,
+  "observacoes": "Pedido PIX com chave de pagamento",
+  "chavePagamento": "PIX-CHAVE-123456789",
+  "dadosPagamento": {
+    "tipoPagamento": "PIX",
+    "chavePix": "usuario@email.com"
+  },
+  "itens": [
+    {
+      "codigoProduto": 1,
+      "quantidade": 1,
+      "valorUnitario": 1500.00
+    }
+  ]
+}
+
+### Teste com chavePagamento - Atualizar pedido com chave de pagamento
+PUT {{baseUrl}}/22
+Content-Type: application/json
+
+{
+  "codigoCliente": 2,
+  "status": "PAGO",
+  "total": 3589.90,
+  "observacoes": "Pedido pago via PIX - atualizado",
+  "chavePagamento": "PIX-CONFIRMADO-987654321",
+  "dadosPagamento": {
+    "tipoPagamento": "PIX",
+    "chavePix": "pix-pagamento-123456789"
+  },
+  "itens": [
+    {
+      "codigoProduto": 2,
+      "quantidade": 1,
+      "valorUnitario": 3500.00
+    },
+    {
+      "codigoProduto": 3,
+      "quantidade": 1,
+      "valorUnitario": 89.90
+    }
+  ]
+}
