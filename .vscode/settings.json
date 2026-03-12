@@ -1,4 +1,9 @@
 {
     "java.server.launchMode": "Standard",
     "java.jdt.ls.vmargs":  "-Xms512m -Xmx2048m -XX:+UseG1GC"
+},
+{
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    }
 }

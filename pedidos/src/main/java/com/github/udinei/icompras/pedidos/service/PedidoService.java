@@ -1,20 +1,25 @@
 package com.github.udinei.icompras.pedidos.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.github.udinei.icompras.pedidos.client.ServicoBancarioClient;
 import com.github.udinei.icompras.pedidos.dto.NovoPedidoDTO;
 import com.github.udinei.icompras.pedidos.dto.PedidoDTO;
 import com.github.udinei.icompras.pedidos.mapper.PedidoMapper;
 import com.github.udinei.icompras.pedidos.model.ItemPedido;
 import com.github.udinei.icompras.pedidos.model.Pedido;
 import com.github.udinei.icompras.pedidos.model.StatusPedido;
+import com.github.udinei.icompras.pedidos.repository.ItemPedidoRepository;
 import com.github.udinei.icompras.pedidos.repository.PedidoRepository;
+import com.github.udinei.icompras.pedidos.validator.PedidoValidator;
+
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,20 +27,21 @@ public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
     private final PedidoMapper pedidoMapper;
-    private final Validator validator;
-
+    private final PedidoValidator validator;
+    private final ServicoBancarioClient servicoBancarioClient;
+    private final ItemPedidoRepository itemPedidoRepository;    
+    
  
     @Transactional
     public Pedido salvar(Pedido pedido) {
 
+        validator.validar(pedido);
+        pedido = pedidoRepository.save(pedido);
+        itemPedidoRepository.saveAll(pedido.getItens());
 
-        // Associar cada item ao pedido - criar uma cópia da lista para evitar ConcurrentModificationException
-        if (pedido.getItens() != null && !pedido.getItens().isEmpty()) {
-            List<ItemPedido> itensTemp = new ArrayList<>(pedido.getItens());
-            pedido.clearItens();
-            itensTemp.forEach(pedido::addItem);
-        }
-        return pedidoRepository.save(pedido);
+        var chavePagamento = servicoBancarioClient.solicitarPagamento(pedido);
+        pedido.setChavePagamento(chavePagamento);
+        return pedido;
     }
     
 
