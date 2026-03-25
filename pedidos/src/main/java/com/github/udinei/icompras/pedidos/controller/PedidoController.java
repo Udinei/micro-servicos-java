@@ -1,10 +1,14 @@
 package com.github.udinei.icompras.pedidos.controller;
 
+import com.github.udinei.icompras.pedidos.dto.AdicaoNovoPagamentoDTO;
 import com.github.udinei.icompras.pedidos.dto.NovoPedidoDTO;
 import com.github.udinei.icompras.pedidos.dto.PedidoDTO;
 import com.github.udinei.icompras.pedidos.mapper.PedidoMapper;
+import com.github.udinei.icompras.pedidos.model.ErroResposta;
 import com.github.udinei.icompras.pedidos.model.Pedido;
 import com.github.udinei.icompras.pedidos.model.StatusPedido;
+import com.github.udinei.icompras.pedidos.model.exception.ItemNaoEncontradoException;
+import com.github.udinei.icompras.pedidos.model.exception.ValidationException;
 import com.github.udinei.icompras.pedidos.service.PedidoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -67,12 +71,31 @@ public class PedidoController {
      * POST /api/pedidos - Criar novo pedido
      */
     @PostMapping
-    public ResponseEntity<PedidoDTO> criar(@Valid @RequestBody NovoPedidoDTO novoPedidoDTO) {
-        Pedido pedido = pedidoMapper.map(novoPedidoDTO);
-        Pedido novoPedido = pedidoService.salvar(pedido);
-        PedidoDTO pedidoDTO = pedidoMapper.map(novoPedido);
-        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoDTO);
+    public ResponseEntity<Object> criar(@Valid @RequestBody NovoPedidoDTO novoPedidoDTO) {
+        try {
+            Pedido pedido = pedidoMapper.map(novoPedidoDTO);
+            Pedido novoPedido = pedidoService.salvar(pedido);
+            PedidoDTO pedidoDTO = pedidoMapper.map(novoPedido);
+            return ResponseEntity.status(HttpStatus.CREATED).body(pedidoDTO);
+        }catch (ValidationException e){
+            var erro = new ErroResposta("Erro validação", e.getField(), e.getMessage());
+            return ResponseEntity.badRequest().body(erro);
+        }
     }
+
+    @PostMapping("pagamentos")
+    public ResponseEntity<Object> adicionarNovoPagamento(@RequestBody AdicaoNovoPagamentoDTO dto){
+          try {
+              pedidoService.adicionarNovoPagamento(dto.codigoPedido(), dto.dados(), dto.tipoPagamento());
+              return ResponseEntity.noContent().build();
+          } catch (ItemNaoEncontradoException e) {
+              var erro = new ErroResposta("item Não Encontrado", "codigoPedido", e.getMessage());
+              return  ResponseEntity.badRequest().body(erro);
+          }
+
+
+    }
+
 
     /**
      * PUT /api/pedidos/{codigo} - Atualizar pedido existente

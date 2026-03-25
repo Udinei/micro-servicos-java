@@ -1,9 +1,10 @@
 {
     "java.server.launchMode": "Standard",
-    "java.jdt.ls.vmargs":  "-Xms512m -Xmx2048m -XX:+UseG1GC"
-},
-{
+    "java.jdt.ls.vmargs": "-Xms256m -Xmx512m",
     "editor.codeActionsOnSave": {
-        "source.organizeImports": true
-    }
+        "source.organizeImports": "explicit"
+    },
+    "java.saveActions.organizeImports": true,
+    "maven.executable.path": "C:\\maven\\bin\\mvn.cmd",
+    "maven.terminal.useJavaHome": true
 }

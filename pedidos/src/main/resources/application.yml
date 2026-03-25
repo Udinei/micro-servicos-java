@@ -14,6 +14,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
 
 server:
   port: 8083
@@ -22,7 +23,14 @@ icompras:
   pedidos:
     clients:
       produtos:
-        url: 'http://localhost:8081/produtos' 
-      clients:
-        url: 'http://localhost:8082/clientes'
+        url: 'http://localhost:8081/api/produtos' 
+      clientes:
+        url: 'http://localhost:8082/api/clientes'
+  config:
+    kafka:
+      server-url: 'http://localhost:99092'
+      topics:
+        pedidos-pagos: 'icompras.pedidos-pagos'
+        pedidos-faturados: 'icompras.pedidos-faturados'
+        pedidos-enviados: 'icompras.pedidos-enviados'
   

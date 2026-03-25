@@ -68,7 +68,7 @@ public class Pedido {
 
     // Atributo transient para transferir dados de pagamento (não persistido no banco)
     @Transient
-    private DadosPagamentoDTO dadosPagamento;
+    private DadosPagamento dadosPagamento;
 
     @Column(name = "chave_pagamento")
     private String chavePagamento;
